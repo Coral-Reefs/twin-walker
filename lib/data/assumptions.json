@@ -1,0 +1,30 @@
+{
+  "disclaimer": "Every number in DayZero is an illustrative assumption for a fictional township inspired by a 30-acre mixed-use masterplan. Nothing here is real project data from any developer.",
+  "sources": {
+    "illustrative": "Illustrative assumption",
+    "typical": "Illustrative — typical pedestrian planning value",
+    "persona": "Illustrative — fictional persona profile",
+    "model": "Model rule (DayZero simulation)",
+    "cost": "Illustrative order-of-magnitude estimate, not a quote"
+  },
+  "model": [
+    { "key": "heatSlowdown", "label": "Slowdown in unshaded midday heat (heat-sensitive personas)", "unit": "%", "scale": 100, "source": "illustrative" },
+    { "key": "directnessFactor", "label": "A 'direct' route is at most this × straight-line distance", "unit": "×", "scale": 1, "source": "typical" },
+    { "key": "detourRatioThreshold", "label": "Crossing-detour barrier when route exceeds this × straight line", "unit": "×", "scale": 1, "source": "model" },
+    { "key": "detourMinExtraM", "label": "…and is at least this much longer than a direct route", "unit": "m", "scale": 1, "source": "model" },
+    { "key": "verdictThresholdMin", "label": "Smallest change counted as better / worse", "unit": "min", "scale": 1, "source": "model" },
+    { "key": "stepFreeGapThresholdMin", "label": "Smallest step-free detour counted as a barrier", "unit": "min", "scale": 1, "source": "model" }
+  ],
+  "rules": [
+    { "label": "Journey time", "value": "distance ÷ speed + crossing waits + queue waits + rest-stop penalties", "source": "model" },
+    { "label": "No-seating barrier", "value": "Continuous stretch with no seat longer than the persona's comfortable limit (150 m for Uncle Tan)", "source": "model" },
+    { "label": "Seated path", "value": "A path with ≥ 1 seat per 100 m never exceeds the limit; seats at a place reset the stretch", "source": "model" },
+    { "label": "Step-free gap", "value": "The step-free route is longer than the route with steps (wheelchair users cannot use steps at all)", "source": "model" },
+    { "label": "Footbridge stairs", "value": "Each flight of stairs counted as ≈ 40 m of equivalent walking", "source": "illustrative" },
+    { "label": "Time at stops", "value": "Shown separately; not counted as journey time (except inside a deadline window)", "source": "model" },
+    { "label": "Time returned per year", "value": "Minutes saved per day × days a year the routine happens", "source": "model" },
+    { "label": "Accessibility gain", "value": "Net minutes per day no longer lost to barriers, summed over all personas", "source": "model" },
+    { "label": "Resident preference", "value": "Borda count: 1st choice = 3 points, 2nd = 2, 3rd = 1", "source": "model" },
+    { "label": "Map scale", "value": "1 map unit = 1 m; layout is fictional", "source": "illustrative" }
+  ]
+}

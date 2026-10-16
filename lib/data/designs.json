@@ -1,0 +1,179 @@
+[
+  {
+    "id": "shaded-seating",
+    "title": "Shaded seating area",
+    "shortTitle": "Shaded seating",
+    "summary": "A shaded rest plaza where School Lane meets Residents' Walk, plus benches under trees every ~80 m along the Walk up to the park.",
+    "icon": "seating",
+    "costRM": 180000,
+    "costNote": "Benches, shade trees and a small canopy (illustrative)",
+    "marker": {
+      "x": 205,
+      "y": 430
+    },
+    "patches": [
+      {
+        "op": "setNode",
+        "nodeId": "sp_b",
+        "set": {
+          "hasSeating": true,
+          "kind": "seating",
+          "label": "Shaded seating plaza"
+        }
+      },
+      {
+        "op": "setEdge",
+        "edgeId": "e_sp_n_a",
+        "set": {
+          "shaded": true,
+          "seatsPer100m": 1.25
+        }
+      },
+      {
+        "op": "setEdge",
+        "edgeId": "e_sp_a_b",
+        "set": {
+          "shaded": true,
+          "seatsPer100m": 1.25
+        }
+      },
+      {
+        "op": "setEdge",
+        "edgeId": "e_sp_b_c",
+        "set": {
+          "shaded": true,
+          "seatsPer100m": 1.25
+        }
+      },
+      {
+        "op": "setEdge",
+        "edgeId": "e_sp_c_s",
+        "set": {
+          "shaded": true,
+          "seatsPer100m": 1.25
+        }
+      },
+      {
+        "op": "setEdge",
+        "edgeId": "e_spn_parks",
+        "set": {
+          "shaded": true,
+          "seatsPer100m": 1.25
+        }
+      },
+      {
+        "op": "setEdge",
+        "edgeId": "e_spn_parkw",
+        "set": {
+          "shaded": true,
+          "seatsPer100m": 1.25
+        }
+      }
+    ]
+  },
+  {
+    "id": "crossing-reposition",
+    "title": "Repositioned crossing",
+    "shortTitle": "Moved crossing",
+    "summary": "Move the signalised crossing from the junction to mid-block, in line with School Lane — the line people actually walk to the shops, clinic and station.",
+    "icon": "crossing",
+    "costRM": 450000,
+    "costNote": "Signals, kerb ramps, tactile paving and road markings (illustrative)",
+    "marker": {
+      "x": 510,
+      "y": 485
+    },
+    "patches": [
+      {
+        "op": "addEdge",
+        "edge": {
+          "id": "e_cross_mid",
+          "from": "bw_l",
+          "to": "be_l",
+          "label": "Mid-block crossing",
+          "lengthM": 60,
+          "stepFree": true,
+          "shaded": false,
+          "seatsPer100m": 0,
+          "crossing": {
+            "kind": "road",
+            "label": "Mid-block crossing",
+            "waitS": {
+              "peak": 45,
+              "offpeak": 35,
+              "night": 20
+            }
+          }
+        }
+      },
+      {
+        "op": "removeEdge",
+        "edgeId": "e_cross_junction"
+      }
+    ]
+  },
+  {
+    "id": "family-pickup",
+    "title": "Family-friendly pickup point",
+    "shortTitle": "Family pickup",
+    "summary": "Move school pickup from the narrow rear gate to a covered pickup point on School Lane with seating and staggered release. Its drop-off driveway crosses the School Lane footpath.",
+    "icon": "pickup",
+    "costRM": 320000,
+    "costNote": "Covered waiting area, drop-off bay and driveway (illustrative)",
+    "marker": {
+      "x": 350,
+      "y": 382
+    },
+    "patches": [
+      {
+        "op": "addNode",
+        "node": {
+          "id": "pickup_family",
+          "label": "Family pickup point",
+          "kind": "school",
+          "x": 400,
+          "y": 405,
+          "hasSeating": true,
+          "waitMin": {
+            "peak": 2,
+            "offpeak": 0.5,
+            "night": 0
+          }
+        }
+      },
+      {
+        "op": "addEdge",
+        "edge": {
+          "id": "e_pickup",
+          "from": "pickup_family",
+          "to": "sl_m",
+          "label": "Pickup forecourt",
+          "lengthM": 25,
+          "stepFree": true,
+          "shaded": true,
+          "seatsPer100m": 2
+        }
+      },
+      {
+        "op": "setEdge",
+        "edgeId": "e_sl_e",
+        "set": {
+          "crossing": {
+            "kind": "driveway",
+            "label": "the pickup driveway",
+            "waitS": {
+              "peak": 75,
+              "offpeak": 10,
+              "night": 0
+            }
+          }
+        }
+      },
+      {
+        "op": "relocateStop",
+        "fromNodeId": "school_rear",
+        "toNodeId": "pickup_family"
+      }
+    ]
+  }
+]

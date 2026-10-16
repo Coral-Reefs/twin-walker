@@ -1,0 +1,720 @@
+{
+  "meta": {
+    "name": "DayZero Township (illustrative)",
+    "width": 1000,
+    "height": 700,
+    "metresPerUnit": 1,
+    "disclaimer": "Fictional township inspired by a 30-acre mixed-use masterplan. Layout, distances and waits are illustrative assumptions, not project data."
+  },
+  "nodes": [
+    {
+      "id": "park",
+      "label": "Central Park lawn",
+      "kind": "park",
+      "x": 190,
+      "y": 115,
+      "hasSeating": true
+    },
+    {
+      "id": "park_s",
+      "label": "Park south gate (steps)",
+      "kind": "entrance",
+      "x": 250,
+      "y": 225,
+      "hasSeating": false
+    },
+    {
+      "id": "park_w",
+      "label": "Park west gate (ramp)",
+      "kind": "entrance",
+      "x": 130,
+      "y": 228,
+      "hasSeating": false
+    },
+    {
+      "id": "sp_n",
+      "label": "Residents' Walk (north)",
+      "kind": "junction",
+      "x": 250,
+      "y": 262,
+      "hasSeating": false
+    },
+    {
+      "id": "sp_a",
+      "label": "Residents' Walk / Block A",
+      "kind": "junction",
+      "x": 250,
+      "y": 330,
+      "hasSeating": false
+    },
+    {
+      "id": "sp_b",
+      "label": "Residents' Walk / School Lane",
+      "kind": "junction",
+      "x": 250,
+      "y": 430,
+      "hasSeating": false
+    },
+    {
+      "id": "sp_c",
+      "label": "Residents' Walk / Block B",
+      "kind": "junction",
+      "x": 250,
+      "y": 520,
+      "hasSeating": false
+    },
+    {
+      "id": "sp_s",
+      "label": "Residents' Walk (south)",
+      "kind": "junction",
+      "x": 250,
+      "y": 640,
+      "hasSeating": false
+    },
+    {
+      "id": "home_a",
+      "label": "Block A",
+      "kind": "home",
+      "x": 195,
+      "y": 330,
+      "hasSeating": true
+    },
+    {
+      "id": "home_b",
+      "label": "Block B",
+      "kind": "home",
+      "x": 195,
+      "y": 520,
+      "hasSeating": true
+    },
+    {
+      "id": "home_c",
+      "label": "Block C",
+      "kind": "home",
+      "x": 335,
+      "y": 485,
+      "hasSeating": true
+    },
+    {
+      "id": "home_d",
+      "label": "Block D",
+      "kind": "home",
+      "x": 330,
+      "y": 640,
+      "hasSeating": true
+    },
+    {
+      "id": "market",
+      "label": "Wet Market",
+      "kind": "market",
+      "x": 110,
+      "y": 640,
+      "hasSeating": true
+    },
+    {
+      "id": "school_rear",
+      "label": "School rear gate (pickup)",
+      "kind": "school",
+      "x": 300,
+      "y": 262,
+      "hasSeating": false,
+      "waitMin": {
+        "peak": 7,
+        "offpeak": 1,
+        "night": 0
+      }
+    },
+    {
+      "id": "sl_m",
+      "label": "School Lane",
+      "kind": "junction",
+      "x": 400,
+      "y": 430,
+      "hasSeating": false
+    },
+    {
+      "id": "bw_n",
+      "label": "Boulevard west (north)",
+      "kind": "junction",
+      "x": 480,
+      "y": 110,
+      "hasSeating": false
+    },
+    {
+      "id": "bw_l",
+      "label": "Boulevard west / School Lane",
+      "kind": "junction",
+      "x": 480,
+      "y": 430,
+      "hasSeating": false
+    },
+    {
+      "id": "bw_s",
+      "label": "Boulevard west (junction)",
+      "kind": "junction",
+      "x": 480,
+      "y": 580,
+      "hasSeating": false
+    },
+    {
+      "id": "be_n",
+      "label": "Boulevard east (north)",
+      "kind": "junction",
+      "x": 540,
+      "y": 110,
+      "hasSeating": false
+    },
+    {
+      "id": "be_m",
+      "label": "Boulevard east / Podium",
+      "kind": "junction",
+      "x": 540,
+      "y": 300,
+      "hasSeating": false
+    },
+    {
+      "id": "be_l",
+      "label": "Boulevard east (mid)",
+      "kind": "junction",
+      "x": 540,
+      "y": 430,
+      "hasSeating": false
+    },
+    {
+      "id": "be_s",
+      "label": "Boulevard east (junction)",
+      "kind": "junction",
+      "x": 540,
+      "y": 580,
+      "hasSeating": false
+    },
+    {
+      "id": "plaza",
+      "label": "Station Plaza",
+      "kind": "junction",
+      "x": 725,
+      "y": 145,
+      "hasSeating": true
+    },
+    {
+      "id": "station",
+      "label": "DayZero Central Station",
+      "kind": "station",
+      "x": 880,
+      "y": 145,
+      "hasSeating": true
+    },
+    {
+      "id": "retail",
+      "label": "Retail Podium · Pharmacy",
+      "kind": "pharmacy",
+      "x": 660,
+      "y": 300,
+      "hasSeating": true
+    },
+    {
+      "id": "food",
+      "label": "Food Hall",
+      "kind": "food",
+      "x": 660,
+      "y": 425,
+      "hasSeating": true
+    },
+    {
+      "id": "clinic",
+      "label": "Community Clinic",
+      "kind": "clinic",
+      "x": 660,
+      "y": 560,
+      "hasSeating": true
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_park_s",
+      "from": "park_s",
+      "to": "park",
+      "label": "Park steps & lawn path",
+      "lengthM": 130,
+      "stepFree": false,
+      "shaded": true,
+      "seatsPer100m": 2
+    },
+    {
+      "id": "e_park_w",
+      "from": "park_w",
+      "to": "park",
+      "label": "Park ramp & lawn path",
+      "lengthM": 130,
+      "stepFree": true,
+      "shaded": true,
+      "seatsPer100m": 2
+    },
+    {
+      "id": "e_spn_parks",
+      "from": "sp_n",
+      "to": "park_s",
+      "label": "Park south approach",
+      "lengthM": 40,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_spn_parkw",
+      "from": "sp_n",
+      "to": "park_w",
+      "label": "Park edge path",
+      "lengthM": 125,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_sp_n_a",
+      "from": "sp_n",
+      "to": "sp_a",
+      "label": "Residents' Walk",
+      "lengthM": 70,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_sp_a_b",
+      "from": "sp_a",
+      "to": "sp_b",
+      "label": "Residents' Walk",
+      "lengthM": 100,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_sp_b_c",
+      "from": "sp_b",
+      "to": "sp_c",
+      "label": "Residents' Walk",
+      "lengthM": 90,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_sp_c_s",
+      "from": "sp_c",
+      "to": "sp_s",
+      "label": "Residents' Walk",
+      "lengthM": 120,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_home_a",
+      "from": "home_a",
+      "to": "sp_a",
+      "label": "Block A path",
+      "lengthM": 55,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_home_b",
+      "from": "home_b",
+      "to": "sp_c",
+      "label": "Block B path",
+      "lengthM": 55,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_home_c_sp",
+      "from": "home_c",
+      "to": "sp_c",
+      "label": "Block C west path",
+      "lengthM": 95,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_home_c_sl",
+      "from": "home_c",
+      "to": "sl_m",
+      "label": "Block C north path",
+      "lengthM": 90,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_home_d",
+      "from": "home_d",
+      "to": "sp_s",
+      "label": "Block D path",
+      "lengthM": 80,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_home_d_e",
+      "from": "home_d",
+      "to": "bw_s",
+      "label": "Block D east path",
+      "lengthM": 165,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_market",
+      "from": "market",
+      "to": "sp_s",
+      "label": "Market lane",
+      "lengthM": 140,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_school_rear",
+      "from": "sp_n",
+      "to": "school_rear",
+      "label": "School rear lane",
+      "lengthM": 50,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_sl_w",
+      "from": "sp_b",
+      "to": "sl_m",
+      "label": "School Lane (west)",
+      "lengthM": 150,
+      "stepFree": true,
+      "shaded": true,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_sl_e",
+      "from": "sl_m",
+      "to": "bw_l",
+      "label": "School Lane (east)",
+      "lengthM": 80,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_park_link",
+      "from": "sp_n",
+      "to": "bw_n",
+      "label": "Park edge path to Boulevard",
+      "lengthM": 280,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_bw_n_l",
+      "from": "bw_n",
+      "to": "bw_l",
+      "label": "Boulevard west footpath",
+      "lengthM": 320,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_bw_l_s",
+      "from": "bw_l",
+      "to": "bw_s",
+      "label": "Boulevard west footpath",
+      "lengthM": 150,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_bridge",
+      "from": "bw_n",
+      "to": "be_n",
+      "label": "North footbridge (stairs)",
+      "lengthM": 140,
+      "stepFree": false,
+      "shaded": false,
+      "seatsPer100m": 0,
+      "crossing": {
+        "kind": "road",
+        "label": "North footbridge",
+        "waitS": {
+          "peak": 0,
+          "offpeak": 0,
+          "night": 0
+        }
+      }
+    },
+    {
+      "id": "e_cross_junction",
+      "from": "bw_s",
+      "to": "be_s",
+      "label": "Junction crossing",
+      "lengthM": 60,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0,
+      "crossing": {
+        "kind": "road",
+        "label": "Junction crossing",
+        "waitS": {
+          "peak": 80,
+          "offpeak": 50,
+          "night": 30
+        }
+      }
+    },
+    {
+      "id": "e_be_n_m",
+      "from": "be_n",
+      "to": "be_m",
+      "label": "Boulevard east footpath",
+      "lengthM": 190,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_be_m_l",
+      "from": "be_m",
+      "to": "be_l",
+      "label": "Boulevard east footpath",
+      "lengthM": 130,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_be_l_s",
+      "from": "be_l",
+      "to": "be_s",
+      "label": "Boulevard east footpath",
+      "lengthM": 150,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_station_link",
+      "from": "be_n",
+      "to": "plaza",
+      "label": "Station link",
+      "lengthM": 190,
+      "stepFree": true,
+      "shaded": true,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_concourse",
+      "from": "plaza",
+      "to": "station",
+      "label": "Station concourse",
+      "lengthM": 155,
+      "stepFree": true,
+      "shaded": true,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_promenade",
+      "from": "retail",
+      "to": "plaza",
+      "label": "Covered promenade",
+      "lengthM": 170,
+      "stepFree": true,
+      "shaded": true,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_podium",
+      "from": "be_m",
+      "to": "retail",
+      "label": "Podium entrance",
+      "lengthM": 120,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_retail_food",
+      "from": "retail",
+      "to": "food",
+      "label": "Arcade",
+      "lengthM": 125,
+      "stepFree": true,
+      "shaded": true,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_food_l",
+      "from": "be_l",
+      "to": "food",
+      "label": "Food Hall forecourt",
+      "lengthM": 125,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_food_clinic",
+      "from": "food",
+      "to": "clinic",
+      "label": "Clinic walk",
+      "lengthM": 135,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    },
+    {
+      "id": "e_clinic_s",
+      "from": "be_s",
+      "to": "clinic",
+      "label": "Clinic forecourt",
+      "lengthM": 125,
+      "stepFree": true,
+      "shaded": false,
+      "seatsPer100m": 0
+    }
+  ],
+  "areas": [
+    {
+      "id": "a_park",
+      "kind": "park",
+      "x": 40,
+      "y": 30,
+      "w": 300,
+      "h": 185,
+      "label": "Central Park"
+    },
+    {
+      "id": "a_road",
+      "kind": "road",
+      "x": 492,
+      "y": 0,
+      "w": 36,
+      "h": 700,
+      "label": "Township Boulevard"
+    },
+    {
+      "id": "a_rail",
+      "kind": "rail",
+      "x": 948,
+      "y": 0,
+      "w": 22,
+      "h": 700,
+      "label": "Rail line"
+    },
+    {
+      "id": "a_station",
+      "kind": "civic",
+      "x": 850,
+      "y": 95,
+      "w": 92,
+      "h": 100,
+      "label": "Station"
+    },
+    {
+      "id": "a_plaza",
+      "kind": "plaza",
+      "x": 690,
+      "y": 120,
+      "w": 150,
+      "h": 55
+    },
+    {
+      "id": "a_school",
+      "kind": "school",
+      "x": 300,
+      "y": 280,
+      "w": 150,
+      "h": 120,
+      "label": "Primary School"
+    },
+    {
+      "id": "a_block_a",
+      "kind": "residential",
+      "x": 95,
+      "y": 295,
+      "w": 85,
+      "h": 70,
+      "label": "Block A"
+    },
+    {
+      "id": "a_block_b",
+      "kind": "residential",
+      "x": 95,
+      "y": 485,
+      "w": 85,
+      "h": 70,
+      "label": "Block B"
+    },
+    {
+      "id": "a_block_c",
+      "kind": "residential",
+      "x": 300,
+      "y": 495,
+      "w": 130,
+      "h": 60,
+      "label": "Block C"
+    },
+    {
+      "id": "a_block_d",
+      "kind": "residential",
+      "x": 300,
+      "y": 610,
+      "w": 130,
+      "h": 60,
+      "label": "Block D"
+    },
+    {
+      "id": "a_market",
+      "kind": "retail",
+      "x": 40,
+      "y": 605,
+      "w": 90,
+      "h": 65,
+      "label": "Wet Market"
+    },
+    {
+      "id": "a_retail",
+      "kind": "retail",
+      "x": 600,
+      "y": 250,
+      "w": 150,
+      "h": 85,
+      "label": "Retail Podium"
+    },
+    {
+      "id": "a_food",
+      "kind": "retail",
+      "x": 600,
+      "y": 395,
+      "w": 150,
+      "h": 60,
+      "label": "Food Hall"
+    },
+    {
+      "id": "a_clinic",
+      "kind": "civic",
+      "x": 600,
+      "y": 525,
+      "w": 150,
+      "h": 70,
+      "label": "Clinic"
+    }
+  ],
+  "relocations": {}
+}

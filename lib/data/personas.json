@@ -1,0 +1,82 @@
+[
+  {
+    "id": "aisyah",
+    "name": "Aisyah",
+    "role": "Working parent",
+    "summary": "Hybrid office worker. On weekday evenings she collects her son from school, picks up his asthma inhaler and catches the 18:00 train to her mother's.",
+    "icon": "parent",
+    "speedMps": 1.15,
+    "maxContinuousWalkM": 1200,
+    "requiresStepFree": false,
+    "heatSensitive": false,
+    "restPenaltyMin": 0,
+    "daysPerYear": 190,
+    "routine": [
+      { "nodeId": "home_c", "purpose": "Leave home", "time": "17:30", "period": "pm-peak", "dwellMin": 0 },
+      { "nodeId": "school_rear", "purpose": "Collect son from school", "time": "17:38", "period": "pm-peak", "dwellMin": 2 },
+      { "nodeId": "retail", "purpose": "Buy asthma inhaler", "time": "17:48", "period": "pm-peak", "dwellMin": 4 },
+      { "nodeId": "station", "purpose": "Catch the 18:00 train", "time": "18:00", "period": "pm-peak", "dwellMin": 0 }
+    ],
+    "deadline": { "label": "Home → on the 18:00 train", "fromStop": 0, "toStop": 3, "withinMin": 30 }
+  },
+  {
+    "id": "ravi",
+    "name": "Ravi",
+    "role": "Night-shift worker",
+    "summary": "Hospital porter on night shifts. Off the train at dawn, groceries, sleep, then dinner at the food hall before the train back to work.",
+    "icon": "night-shift",
+    "speedMps": 1.3,
+    "maxContinuousWalkM": 1500,
+    "requiresStepFree": false,
+    "heatSensitive": false,
+    "restPenaltyMin": 0,
+    "daysPerYear": 240,
+    "routine": [
+      { "nodeId": "station", "purpose": "Arrive from night shift", "time": "06:30", "period": "night", "dwellMin": 0 },
+      { "nodeId": "retail", "purpose": "Groceries", "time": "06:35", "period": "night", "dwellMin": 10 },
+      { "nodeId": "home_b", "purpose": "Home to sleep", "time": "06:55", "period": "night", "dwellMin": 0 },
+      { "nodeId": "food", "purpose": "Dinner at the food hall", "time": "21:30", "period": "night", "dwellMin": 25 },
+      { "nodeId": "station", "purpose": "Train to the 22:30 shift", "time": "22:05", "period": "night", "dwellMin": 0 }
+    ]
+  },
+  {
+    "id": "meiling",
+    "name": "Mei Ling",
+    "role": "Wheelchair user",
+    "summary": "Manual wheelchair user and freelance translator. Physio at the clinic twice a week, then the pharmacy and some time in the park.",
+    "icon": "wheelchair",
+    "speedMps": 1.0,
+    "maxContinuousWalkM": 400,
+    "requiresStepFree": true,
+    "heatSensitive": true,
+    "restPenaltyMin": 1,
+    "daysPerYear": 100,
+    "routine": [
+      { "nodeId": "home_a", "purpose": "Leave home", "time": "08:15", "period": "am-peak", "dwellMin": 0 },
+      { "nodeId": "clinic", "purpose": "Physiotherapy", "time": "08:45", "period": "am-peak", "dwellMin": 45 },
+      { "nodeId": "retail", "purpose": "Pharmacy & groceries", "time": "10:00", "period": "midday", "dwellMin": 20 },
+      { "nodeId": "park", "purpose": "Time outdoors", "time": "11:00", "period": "midday", "dwellMin": 30 },
+      { "nodeId": "home_a", "purpose": "Home for lunch", "time": "12:00", "period": "midday", "dwellMin": 0 }
+    ]
+  },
+  {
+    "id": "tan",
+    "name": "Uncle Tan",
+    "role": "Retired resident (walking aid)",
+    "summary": "78 and walks with a quad cane. Most weekdays: tai chi in the park, the seniors' corner at the clinic, then the wet market before lunch.",
+    "icon": "walking-aid",
+    "speedMps": 0.8,
+    "maxContinuousWalkM": 150,
+    "requiresStepFree": false,
+    "heatSensitive": true,
+    "restPenaltyMin": 1.5,
+    "daysPerYear": 250,
+    "routine": [
+      { "nodeId": "home_d", "purpose": "Leave home", "time": "07:00", "period": "am-peak", "dwellMin": 0 },
+      { "nodeId": "park", "purpose": "Tai chi", "time": "07:20", "period": "am-peak", "dwellMin": 45 },
+      { "nodeId": "clinic", "purpose": "Seniors' corner & check-up", "time": "09:00", "period": "midday", "dwellMin": 60 },
+      { "nodeId": "market", "purpose": "Wet market", "time": "10:45", "period": "midday", "dwellMin": 20 },
+      { "nodeId": "home_d", "purpose": "Home for lunch", "time": "11:30", "period": "midday", "dwellMin": 0 }
+    ]
+  }
+]
