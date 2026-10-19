@@ -2,6 +2,16 @@
 @import "./bbr.css";
 
 @theme {
+
+  /* --text-sm: 1.5rem;
+  --text-base: 1.5rem;
+  --text-lg: 1.5rem;
+  --text-xl: 1.5rem; */
+  --text-sm: 0.9375rem;
+  --text-base: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   /* Neutrals — all text colours meet 4.5:1 on --color-card and --color-paper */
