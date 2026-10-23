@@ -10,6 +10,7 @@ import {
   type Place,
   type Point,
   type Result,
+  type PrecinctHome,
 } from "@/lib/bbr/engine";
 declare global {
   interface Window {
@@ -48,6 +49,8 @@ export default function BBRMap({
   onHome,
   pinHome,
   progress,
+  precinct,
+  budget,
 }: {
   home: Place;
   result: Result;
@@ -60,6 +63,8 @@ export default function BBRMap({
   onHome: (p: Point) => void;
   pinHome: boolean;
   progress: number;
+  precinct: PrecinctHome[] | null;
+  budget: number;
 }) {
   const container = useRef<HTMLDivElement>(null),
     map = useRef<any>(null),
@@ -206,6 +211,27 @@ export default function BBRMap({
       tip.textContent = `${s.label} · ${s.minutes.toFixed(1)} min`;
       line.bindTooltip(tip);
     }
+    if (precinct) {
+      for (const h of precinct) {
+        const complete = !h.after.error;
+        const pass = h.withinAfter;
+        const label = complete ? (pass ? "✓" : "×") : "?";
+        const fill = complete
+          ? pass
+            ? "#2f8b63"
+            : "#c04a3b"
+          : "#8a8a8a";
+        L.marker([h.home.lat, h.home.lon], {
+          icon: L.divIcon({
+            className: "",
+            html: `<span class="precinct-dot" style="background:${fill};" aria-label="${pass ? "Pass" : "Fail"}">${label}</span>`,
+            iconSize: [16, 16],
+            iconAnchor: [8, 8],
+          }),
+          interactive: false,
+        }).addTo(g);
+      }
+    }
     if (active.includes("seating"))
       L.circle([park.lat, park.lon], {
         radius: 500,
@@ -224,7 +250,7 @@ export default function BBRMap({
       })
         .bindTooltip("Proposed school-area changes · illustrative")
         .addTo(g);
-  }, [ready, home, result, baseline, showParking, compare, active]);
+  }, [ready, home, result, baseline, showParking, compare, active, precinct, budget]);
   useEffect(() => {
     if (ready && selected) map.current?.panTo([selected.lat, selected.lon]);
   }, [ready, selected]);

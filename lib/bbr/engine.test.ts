@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {defaultStops,homes,profiles,simulate,route,school,park,parking,type Stop} from './engine';
+import {defaultStops,defaultStopsFor,homes,homeCandidates,profiles,simulate,route,school,park,parking,precinctImpact,shadeData,type Stop} from './engine';
 const home=homes[0]!,p=profiles[0]!;
 describe('Bandar Bukit Raja geographic journeys',()=>{
  it('routes every default mobility profile across the imported network',()=>{for(const person of profiles){const r=simulate(home,defaultStops(),person,[]);expect(r.error).toBeNull();expect(r.walkM).toBeGreaterThan(1000);expect(r.segments).toHaveLength(4);}});
@@ -10,4 +10,10 @@ describe('Bandar Bukit Raja geographic journeys',()=>{
  it('applies spatial interventions only when the route reaches them',()=>{const r=simulate(home,[],profiles[3]!,['seating','crossing','pickup']);expect(r.minutes).toBe(0);expect(r.barriers).toBe(0);});
  it('returns deterministic comparison results without mutating stops',()=>{const s=defaultStops(),snapshot=JSON.stringify(s);const a=simulate(home,s,p,['crossing','pickup']);const b=simulate(home,s,p,['pickup','crossing']);expect(a.minutes).toBe(b.minutes);expect(JSON.stringify(s)).toBe(snapshot);});
  it('charges home arrivals no parking-search time',()=>{const stops:Stop[]=[{placeId:home.id,mode:'drive',parkingId:parking[0]!.id,dwell:0}];expect(simulate(home,stops,p,[]).parkingVisits).toBe(0);});
+ it('samples a reasonable number of candidate homes from residential ways',()=>{expect(homeCandidates.length).toBeGreaterThanOrEqual(100);expect(homeCandidates.length).toBeLessThanOrEqual(400);for(const h of homeCandidates){expect(h.lat).toBeGreaterThan(3.08);expect(h.lat).toBeLessThan(3.106);expect(h.lon).toBeGreaterThan(101.414);expect(h.lon).toBeLessThan(101.446);}});
+ it('reports precinct-wide pass rate, median and improvement from interventions',()=>{const impact=precinctImpact(defaultStopsFor('retired'),profiles[3]!,['seating'],90,4,'09:00');expect(impact.perHome.length).toBe(homeCandidates.length);expect(impact.completeHomes).toBeGreaterThan(50);expect(impact.medianAfter).toBeLessThanOrEqual(impact.medianBefore);expect(impact.passRateAfter).toBeGreaterThanOrEqual(impact.passRateBefore);});
+ it('gives each persona a different default routine',()=>{const ids=new Set(profiles.map(p=>JSON.stringify(defaultStopsFor(p.id).map(s=>s.placeId))));expect(ids.size).toBe(profiles.length);});
+ it('slows heat-sensitive profiles on unshaded walks between 11:00 and 16:00',()=>{const stops:Stop[]=[{placeId:park.id,mode:'walk',parkingId:parking[0]!.id,dwell:0}];const noon=simulate(home,stops,profiles[3]!,[],4,'12:00');const dawn=simulate(home,stops,profiles[3]!,[],4,'06:00');const nonSens=simulate(home,stops,profiles[1]!,[],4,'12:00');const nonSensDawn=simulate(home,stops,profiles[1]!,[],4,'06:00');expect(noon.minutes).toBeGreaterThan(dawn.minutes);expect(nonSens.minutes).toBeCloseTo(nonSensDawn.minutes,5);});
+ it('seating intervention raises walking shade fraction near the park',()=>{const stops:Stop[]=[{placeId:park.id,mode:'walk',parkingId:parking[0]!.id,dwell:0}];const base=simulate(home,stops,profiles[3]!,[]);const withSeating=simulate(home,stops,profiles[3]!,['seating']);expect(withSeating.shadedWalkM).toBeGreaterThan(base.shadedWalkM);});
+ it('shade.json loads as a JSON object',()=>{expect(typeof shadeData).toBe('object');expect(shadeData).not.toBeNull();});
 });

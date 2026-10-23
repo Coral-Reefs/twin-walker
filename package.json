@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "sim:report": "tsx scripts/sim-report.ts"
+    "sim:report": "tsx scripts/sim-report.ts",
+    "precinct:report": "tsx scripts/precinct-report.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2",

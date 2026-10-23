@@ -8,7 +8,10 @@ import {
   profiles,
   options,
   defaultStops,
+  defaultStopsFor,
   simulate,
+  precinctImpact,
+  homeCandidates,
   network,
   distance,
   park,
@@ -26,7 +29,8 @@ const fmt = (n: number) => n.toFixed(1);
 export default function BBRApp() {
   const [profileId, setProfile] = useState("parent"),
     [home, setHome] = useState<Place>(homes[0]!),
-    [stops, setStops] = useState<Stop[]>(defaultStops),
+    [stops, setStops] = useState<Stop[]>(() => defaultStopsFor("parent")),
+    [routineOwner, setRoutineOwner] = useState<string>("parent"),
     [active, setActive] = useState<string[]>([]);
   const [tab, setTab] = useState("routine"),
     [view, setView] = useState("explore"),
@@ -35,9 +39,10 @@ export default function BBRApp() {
     [parkingVisible, setParkingVisible] = useState(true),
     [compare, setCompare] = useState(false),
     [search, setSearch] = useState("");
-  const [departure, setDeparture] = useState("08:00"),
+  const [departure, setDeparture] = useState(profiles[0]!.defaultDeparture),
     [budget, setBudget] = useState(90),
     [searchMin, setSearchMin] = useState(4),
+    [showPrecinct, setShowPrecinct] = useState(false),
     [progress, setProgress] = useState(0),
     [playing, setPlaying] = useState(false),
     [mobile, setMobile] = useState(false),
@@ -64,24 +69,38 @@ export default function BBRApp() {
   );
   const comparisons = useMemo(
     () =>
-      profiles.map((p) => ({
-        p,
-        before: simulate(home, stops, p, [], searchMin, departure),
-        after: simulate(home, stops, p, active, searchMin, departure),
-      })),
-    [home, stops, active, searchMin, departure],
+      profiles.map((p) => {
+        const perStops = defaultStopsFor(p.id);
+        const perDeparture = p.defaultDeparture;
+        return {
+          p,
+          stops: perStops,
+          before: simulate(home, perStops, p, [], searchMin, perDeparture),
+          after: simulate(home, perStops, p, active, searchMin, perDeparture),
+        };
+      }),
+    [home, active, searchMin],
   );
   const impacts = useMemo(
     () =>
       options.map((o) => ({
         o,
-        rows: profiles.map((p) => ({
-          p,
-          b: simulate(home, stops, p, [], searchMin, departure),
-          a: simulate(home, stops, p, [o.id], searchMin, departure),
-        })),
+        rows: profiles.map((p) => {
+          const perStops = defaultStopsFor(p.id);
+          const perDeparture = p.defaultDeparture;
+          return {
+            p,
+            b: simulate(home, perStops, p, [], searchMin, perDeparture),
+            a: simulate(home, perStops, p, [o.id], searchMin, perDeparture),
+          };
+        }),
       })),
-    [home, stops, searchMin, departure],
+    [home, searchMin],
+  );
+  const precinct = useMemo(
+    () =>
+      precinctImpact(stops, profile, active, budget, searchMin, departure),
+    [stops, profile, active, budget, searchMin, departure],
   );
   useEffect(() => {
     try {
@@ -133,6 +152,20 @@ export default function BBRApp() {
   };
   const toggle = (id: string) =>
     setActive((a) => (a.includes(id) ? a.filter((x) => x !== id) : [...a, id]));
+  const chooseProfile = (id: string) => {
+    setProfile(id);
+    const already = JSON.stringify(stops) === JSON.stringify(defaultStopsFor(routineOwner));
+    if (already) {
+      setStops(defaultStopsFor(id));
+      setDeparture(profiles.find((p) => p.id === id)!.defaultDeparture);
+      setRoutineOwner(id);
+    }
+  };
+  const resetRoutineFor = (id: string) => {
+    setStops(defaultStopsFor(id));
+    setDeparture(profiles.find((p) => p.id === id)!.defaultDeparture);
+    setRoutineOwner(id);
+  };
   const setPinnedHome = (p: Point) => {
     setHome({
       ...p,
@@ -319,7 +352,7 @@ export default function BBRApp() {
                         "persona-card " + (profileId === p.id ? "chosen" : "")
                       }
                       aria-pressed={profileId === p.id}
-                      onClick={() => setProfile(p.id)}
+                      onClick={() => chooseProfile(p.id)}
                       key={p.id}
                     >
                       <span className="avatar" style={{ background: p.color }}>
@@ -372,6 +405,12 @@ export default function BBRApp() {
                   </div>
                   <button onClick={() => setTab("resident")}>Change</button>
                 </div>
+                <button
+                  className="text-button"
+                  onClick={() => resetRoutineFor(profileId)}
+                >
+                  ↺ Reset to {profile.name}'s default routine
+                </button>
                 <div className="section-label">01 / START AT HOME</div>
                 <label className="field-label">
                   Home location
@@ -692,6 +731,8 @@ export default function BBRApp() {
             pinHome={pinHome}
             showParking={parkingVisible}
             progress={progress}
+            precinct={showPrecinct ? precinct.perHome : null}
+            budget={budget}
           />
           <div className="map-top" style={{ justifyContent: "flex-end" }}>
             <div className="map-tools map-shadow">
@@ -710,6 +751,14 @@ export default function BBRApp() {
                   onChange={(e) => setCompare(e.target.checked)}
                 />{" "}
                 Before / after
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showPrecinct}
+                  onChange={(e) => setShowPrecinct(e.target.checked)}
+                />{" "}
+                Precinct dots
               </label>
             </div>
           </div>
@@ -832,6 +881,17 @@ export default function BBRApp() {
                       <strong>{result.barriers}</strong>
                       <span>Assumed rest barriers</span>
                     </div>
+                    <div>
+                      <strong>
+                        {result.walkM > 0
+                          ? Math.round(
+                              (result.shadedWalkM / result.walkM) * 100,
+                            )
+                          : 0}
+                        <small>%</small>
+                      </strong>
+                      <span>Route shaded (assumed)</span>
+                    </div>
                   </div>
                   <div className="time-verdict">
                     <span className={result.minutes <= budget ? "good" : "bad"}>
@@ -901,8 +961,10 @@ export default function BBRApp() {
           {view === "compare" ? (
             <>
               <p>
-                Same home and routine, four mobility profiles. Compare who
-                benefits from each change.
+                Same home, four mobility profiles — each on their own
+                illustrative default routine (shown on the card). Precinct
+                impact below replays the active profile’s routine from every
+                candidate home.
               </p>
               <div className="design-chips">
                 {options.map((o) => (
@@ -918,13 +980,24 @@ export default function BBRApp() {
                 ))}
               </div>
               <div className="comparison-grid">
-                {comparisons.map(({ p, before, after }) => (
+                {comparisons.map(({ p, stops: perStops, before, after }) => (
                   <article className="comparison-card" key={p.id}>
                     <span className="avatar" style={{ background: p.color }}>
                       {p.name[0]}
                     </span>
                     <h3>{p.name}</h3>
                     <p>{p.role}</p>
+                    <small style={{ display: "block", margin: "4px 0 6px" }}>
+                      {perStops
+                        .map((s) =>
+                          s.placeId === "return-home"
+                            ? "home"
+                            : (places.find((pl) => pl.id === s.placeId)
+                                ?.name || "?"),
+                        )
+                        .join(" → ")}{" "}
+                      · depart {p.defaultDeparture}
+                    </small>
                     {before.error || after.error ? (
                       <strong>Route incomplete</strong>
                     ) : (
@@ -967,6 +1040,76 @@ export default function BBRApp() {
                       ? "No modelled time disadvantage on this routine. This does not establish universal benefit."
                       : "Select a design change to see benefits and trade-offs."}
                 </p>
+              </div>
+              <div className="soft-card" aria-live="polite">
+                <b>
+                  Precinct impact · {profile.name}’s routine from{" "}
+                  {homeCandidates.length} candidate homes
+                </b>
+                <p>
+                  Within a {budget}-minute budget:{" "}
+                  <strong>
+                    {Math.round(precinct.passRateBefore * 100)}% → {Math.round(
+                      precinct.passRateAfter * 100,
+                    )}%
+                  </strong>{" "}
+                  of homes finish on time (
+                  <span
+                    className={
+                      precinct.passRateAfter >= precinct.passRateBefore
+                        ? "good"
+                        : "bad"
+                    }
+                  >
+                    {precinct.passRateAfter >= precinct.passRateBefore
+                      ? "+"
+                      : ""}
+                    {Math.round(
+                      (precinct.passRateAfter - precinct.passRateBefore) * 100,
+                    )}
+                    pp
+                  </span>
+                  ). Median journey:{" "}
+                  <strong>
+                    {Number.isFinite(precinct.medianBefore)
+                      ? fmt(precinct.medianBefore)
+                      : "–"}{" "}
+                    →{" "}
+                    {Number.isFinite(precinct.medianAfter)
+                      ? fmt(precinct.medianAfter)
+                      : "–"}{" "}
+                    min
+                  </strong>
+                  . Routes complete for {precinct.completeHomes}/
+                  {homeCandidates.length} homes (others sit in a disconnected
+                  OSM cluster).
+                </p>
+                <label className="field-label">
+                  Time budget (min)
+                  <input
+                    type="number"
+                    min={10}
+                    max={1440}
+                    value={budget}
+                    onChange={(e) =>
+                      setBudget(
+                        Math.max(10, Math.min(1440, Number(e.target.value))),
+                      )
+                    }
+                  />
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={showPrecinct}
+                    onChange={(e) => setShowPrecinct(e.target.checked)}
+                  />{" "}
+                  Plot pass / fail dots on the map
+                </label>
+                <small>
+                  Candidate homes = every 7th OSM residential-road node in the
+                  study bbox (illustrative sample).
+                </small>
               </div>
               <details>
                 <summary>Inspect the selected resident’s journey</summary>
