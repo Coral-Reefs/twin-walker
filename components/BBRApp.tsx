@@ -21,6 +21,7 @@ import {
   type SeatingZone,
 } from "@/lib/bbr/engine";
 import { castVote, startJurySync, submitSuggestion } from "@/lib/jury/api";
+import BBRGuide, { useFirstVisit } from "./BBRGuide";
 const Map = dynamic(() => import("./map/BBRMap"), {
   ssr: false,
   loading: () => <div className="map-loading">Opening Bandar Bukit Raja…</div>,
@@ -57,6 +58,7 @@ export default function BBRApp() {
     [notice, setNotice] = useState("");
   const dialog = useRef<HTMLDialogElement>(null);
   const sidebarContent = useRef<HTMLDivElement>(null);
+  const firstVisit = useFirstVisit();
   useEffect(() => {
     if (selected && sidebarContent.current)
       sidebarContent.current.scrollTop = 0;
@@ -250,6 +252,7 @@ export default function BBRApp() {
           ].map(([id, label]) => (
             <button
               key={id}
+              data-tour={id === "compare" ? "nav-compare" : undefined}
               className={view === id ? "active" : ""}
               onClick={() => setView(id!)}
             >
@@ -257,6 +260,11 @@ export default function BBRApp() {
             </button>
           ))}
         </nav>
+        <BBRGuide
+          setTab={setTab}
+          setView={setView}
+          autoOpen={firstVisit}
+        />
         <button
           className="evidence-button"
           onClick={() => dialog.current?.showModal()}
@@ -348,7 +356,7 @@ export default function BBRApp() {
             {tab === "resident" && (
               <>
                 <div className="section-label">01 / CHOOSE A PERSPECTIVE</div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2" data-tour="persona">
                   {profiles.map((p) => (
                     <button
                       className={
@@ -469,7 +477,7 @@ export default function BBRApp() {
                 <div className="section-label">
                   02 / CONNECT YOUR STOPS <span>{stops.length}/6</span>
                 </div>
-                <div className="stop-list">
+                <div className="stop-list" data-tour="routine">
                   {stops.map((s, i) => {
                     const p =
                       s.placeId === "return-home"
@@ -636,7 +644,7 @@ export default function BBRApp() {
               </>
             )}
             {tab === "design" && (
-              <>
+              <div data-tour="design">
                 <div className="section-label">03 / TRY A BETTER EVERYDAY</div>
                 <p className="muted">
                   Changes apply to the marked locations. Results depend on your
@@ -709,7 +717,7 @@ export default function BBRApp() {
                 >
                   Reset all changes
                 </button>
-              </>
+              </div>
             )}
             {/* <details className="township-context">
               <summary>About this township</summary>
@@ -856,6 +864,7 @@ export default function BBRApp() {
             </div>
           )}
           <div
+            data-tour="journey"
             className={
               "journey-dock " + (journeyExpanded ? "expanded" : "collapsed")
             }
