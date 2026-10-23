@@ -18,6 +18,7 @@ import {
   type Place,
   type Stop,
   type Point,
+  type SeatingZone,
 } from "@/lib/bbr/engine";
 import { castVote, startJurySync, submitSuggestion } from "@/lib/jury/api";
 const Map = dynamic(() => import("./map/BBRMap"), {
@@ -43,6 +44,8 @@ export default function BBRApp() {
     [budget, setBudget] = useState(90),
     [searchMin, setSearchMin] = useState(4),
     [showPrecinct, setShowPrecinct] = useState(false),
+    [seatingZone, setSeatingZone] = useState<SeatingZone | null>(null),
+    [placingZone, setPlacingZone] = useState(false),
     [progress, setProgress] = useState(0),
     [playing, setPlaying] = useState(false),
     [mobile, setMobile] = useState(false),
@@ -60,12 +63,12 @@ export default function BBRApp() {
   }, [selected]);
   const profile = profiles.find((p) => p.id === profileId)!;
   const baseline = useMemo(
-    () => simulate(home, stops, profile, [], searchMin, departure),
-    [home, stops, profile, searchMin, departure],
+    () => simulate(home, stops, profile, [], searchMin, departure, seatingZone ?? undefined),
+    [home, stops, profile, searchMin, departure, seatingZone],
   );
   const result = useMemo(
-    () => simulate(home, stops, profile, active, searchMin, departure),
-    [home, stops, profile, active, searchMin, departure],
+    () => simulate(home, stops, profile, active, searchMin, departure, seatingZone ?? undefined),
+    [home, stops, profile, active, searchMin, departure, seatingZone],
   );
   const comparisons = useMemo(
     () =>
@@ -75,11 +78,11 @@ export default function BBRApp() {
         return {
           p,
           stops: perStops,
-          before: simulate(home, perStops, p, [], searchMin, perDeparture),
-          after: simulate(home, perStops, p, active, searchMin, perDeparture),
+          before: simulate(home, perStops, p, [], searchMin, perDeparture, seatingZone ?? undefined),
+          after: simulate(home, perStops, p, active, searchMin, perDeparture, seatingZone ?? undefined),
         };
       }),
-    [home, active, searchMin],
+    [home, active, searchMin, seatingZone],
   );
   const impacts = useMemo(
     () =>
@@ -90,17 +93,17 @@ export default function BBRApp() {
           const perDeparture = p.defaultDeparture;
           return {
             p,
-            b: simulate(home, perStops, p, [], searchMin, perDeparture),
-            a: simulate(home, perStops, p, [o.id], searchMin, perDeparture),
+            b: simulate(home, perStops, p, [], searchMin, perDeparture, seatingZone ?? undefined),
+            a: simulate(home, perStops, p, [o.id], searchMin, perDeparture, seatingZone ?? undefined),
           };
         }),
       })),
-    [home, searchMin],
+    [home, searchMin, seatingZone],
   );
   const precinct = useMemo(
     () =>
-      precinctImpact(stops, profile, active, budget, searchMin, departure),
-    [stops, profile, active, budget, searchMin, departure],
+      precinctImpact(stops, profile, active, budget, searchMin, departure, seatingZone ?? undefined),
+    [stops, profile, active, budget, searchMin, departure, seatingZone],
   );
   useEffect(() => {
     try {
@@ -659,13 +662,51 @@ export default function BBRApp() {
                     </small>
                   </button>
                 ))}
+                <div className="soft-card">
+                  <b>Place a shaded rest-stop zone (250 m)</b>
+                  <p>
+                    {active.includes("seating")
+                      ? seatingZone
+                        ? `Zone centred at ${seatingZone.lat.toFixed(5)}, ${seatingZone.lon.toFixed(5)}, radius ${seatingZone.radius} m.`
+                        : "No custom zone — the seating intervention defaults to a 500 m zone around the study park."
+                      : "Toggle the Shaded rest stops intervention above to apply this zone."}
+                  </p>
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      setPlacingZone((v) => !v);
+                      setPinHome(false);
+                      setMobile(false);
+                    }}
+                  >
+                    ⌖ {placingZone ? "Cancel placing zone" : "Choose zone on map"}
+                  </button>
+                  {seatingZone && (
+                    <button
+                      className="text-button"
+                      onClick={() => setSeatingZone(null)}
+                    >
+                      × Clear custom zone
+                    </button>
+                  )}
+                  <small>
+                    Illustrative. 250 m radius assumption. Replaces the fixed
+                    park zone for the seating intervention while active.
+                  </small>
+                </div>
                 <button
                   className="primary full"
                   onClick={() => setView("compare")}
                 >
                   See who benefits →
                 </button>
-                <button className="text-button" onClick={() => setActive([])}>
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setActive([]);
+                    setSeatingZone(null);
+                  }}
+                >
                   Reset all changes
                 </button>
               </>
@@ -733,6 +774,14 @@ export default function BBRApp() {
             progress={progress}
             precinct={showPrecinct ? precinct.perHome : null}
             budget={budget}
+            seatingZone={seatingZone}
+            placingZone={placingZone}
+            onSeatingZone={(p) => {
+              setSeatingZone({ lat: p.lat, lon: p.lon, radius: 250 });
+              setPlacingZone(false);
+              if (!active.includes("seating")) setActive((a) => [...a, "seating"]);
+              setNotice("Custom shaded rest-stop zone placed (250 m).");
+            }}
           />
           <div className="map-top" style={{ justifyContent: "flex-end" }}>
             <div className="map-tools map-shadow">

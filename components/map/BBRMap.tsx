@@ -11,6 +11,7 @@ import {
   type Point,
   type Result,
   type PrecinctHome,
+  type SeatingZone,
 } from "@/lib/bbr/engine";
 declare global {
   interface Window {
@@ -51,6 +52,9 @@ export default function BBRMap({
   progress,
   precinct,
   budget,
+  seatingZone,
+  placingZone,
+  onSeatingZone,
 }: {
   home: Place;
   result: Result;
@@ -65,13 +69,16 @@ export default function BBRMap({
   progress: number;
   precinct: PrecinctHome[] | null;
   budget: number;
+  seatingZone: SeatingZone | null;
+  placingZone: boolean;
+  onSeatingZone: (p: Point) => void;
 }) {
   const container = useRef<HTMLDivElement>(null),
     map = useRef<any>(null),
     layers = useRef<any>(null),
     dot = useRef<any>(null),
-    callbacks = useRef({ onSelect, onHome, pinHome });
-  callbacks.current = { onSelect, onHome, pinHome };
+    callbacks = useRef({ onSelect, onHome, pinHome, onSeatingZone, placingZone });
+  callbacks.current = { onSelect, onHome, pinHome, onSeatingZone, placingZone };
   const [ready, setReady] = useState(false),
     [error, setError] = useState("");
   useEffect(() => {
@@ -120,14 +127,23 @@ export default function BBRMap({
           interactive: false,
         }).addTo(m);
         m.on("click", (e: any) => {
+          const { lat, lng } = e.latlng;
+          const inside =
+            lat >= 3.08 && lat <= 3.105 && lng >= 101.415 && lng <= 101.445;
           if (callbacks.current.pinHome) {
-            const { lat, lng } = e.latlng;
-            if (lat < 3.08 || lat > 3.105 || lng < 101.415 || lng > 101.445) {
+            if (!inside) {
               setError("Choose a home inside the dashed study boundary.");
               return;
             }
             setError("");
             callbacks.current.onHome({ lat, lon: lng });
+          } else if (callbacks.current.placingZone) {
+            if (!inside) {
+              setError("Choose a zone inside the dashed study boundary.");
+              return;
+            }
+            setError("");
+            callbacks.current.onSeatingZone({ lat, lon: lng });
           }
         });
         layers.current = L.layerGroup().addTo(m);
@@ -232,15 +248,21 @@ export default function BBRMap({
         }).addTo(g);
       }
     }
-    if (active.includes("seating"))
-      L.circle([park.lat, park.lon], {
-        radius: 500,
+    if (active.includes("seating")) {
+      const z = seatingZone ?? { lat: park.lat, lon: park.lon, radius: 500 };
+      L.circle([z.lat, z.lon], {
+        radius: z.radius,
         color: "#3c9472",
         fillOpacity: 0.12,
         weight: 1,
       })
-        .bindTooltip("Proposed seating coverage · illustrative")
+        .bindTooltip(
+          seatingZone
+            ? `Planner-placed shaded zone · ${z.radius} m · illustrative`
+            : "Proposed seating coverage (default 500 m around study park) · illustrative",
+        )
         .addTo(g);
+    }
     if (active.includes("crossing") || active.includes("pickup"))
       L.circle([school.lat, school.lon], {
         radius: 200,
@@ -250,7 +272,7 @@ export default function BBRMap({
       })
         .bindTooltip("Proposed school-area changes · illustrative")
         .addTo(g);
-  }, [ready, home, result, baseline, showParking, compare, active, precinct, budget]);
+  }, [ready, home, result, baseline, showParking, compare, active, precinct, budget, seatingZone]);
   useEffect(() => {
     if (ready && selected) map.current?.panTo([selected.lat, selected.lon]);
   }, [ready, selected]);
@@ -288,7 +310,7 @@ export default function BBRMap({
     <>
       <div
         ref={container}
-        className={"bbr-map " + (pinHome ? "pin-mode" : "")}
+        className={"bbr-map " + (pinHome || placingZone ? "pin-mode" : "")}
         aria-label="Interactive Bandar Bukit Raja map"
       />
       <button

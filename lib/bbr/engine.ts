@@ -58,9 +58,13 @@ export function route(a:Point,b:Point,mode:Mode,stepFree=false):Route|null{
 export type Stop={placeId:string;mode:Mode;parkingId:string;dwell:number};
 export type Segment={label:string;mode:Mode;route:Route;minutes:number;wait:number;rest:number;barriers:number;shadedM:number};
 export type Result={segments:Segment[];minutes:number;walkM:number;driveM:number;wait:number;dwell:number;barriers:number;unknown:number;error:string|null;parkingVisits:number;returnM:number;shadedWalkM:number};
-function edgeShadedFraction(e:Edge, active:string[]):number {
+export type SeatingZone = {lat:number;lon:number;radius:number};
+function edgeShadedFraction(e:Edge, active:string[], zone?:SeatingZone):number {
  const base = Math.max(0, Math.min(1, Number(shadeData[e.way.id] ?? 0)));
- if (active.includes('seating') && distance(nodes.get(e.to)!, park) < 500) return 1;
+ if (active.includes('seating')) {
+  const z = zone ?? {lat:park.lat, lon:park.lon, radius:500};
+  if (distance(nodes.get(e.to)!, z) < z.radius) return 1;
+ }
  return base;
 }
 export function defaultStops():Stop[]{return [school,shop,park,homes[0]!].map(p=>({placeId:p.kind==='home'?'return-home':p.id,mode:'walk',parkingId:parking.slice().sort((a,b)=>distance(a,p)-distance(b,p))[0]!.id,dwell:p.kind==='school'?5:p.kind==='home'?0:10}));}
@@ -84,7 +88,7 @@ export function defaultStopsFor(profileId:string):Stop[] {
 // - Ravi (shift): 99 Speedmart (nearest reachable supermarket in reachable cluster) → home, 22:00
 // - Mei Ling (wheel): Watsons → 99 Speedmart → home, 10:00; the only mapped clinic (Klinik Mediviron) sits in a disconnected OSM cluster from the default homes, so we use the nearest reachable chemist and supermarket
 // - Uncle Tan: BBR Sales Gallery Park → Watsons → FamilyMart (reachable convenience) → home, 09:00
-export function simulate(home:Place,stops:Stop[],profile:Profile,active:string[],searchMin=4,departure='08:00'):Result{
+export function simulate(home:Place,stops:Stop[],profile:Profile,active:string[],searchMin=4,departure='08:00',seatingZone?:SeatingZone):Result{
  const result:Result={segments:[],minutes:0,walkM:0,driveM:0,wait:0,dwell:0,barriers:0,unknown:0,error:null,parkingVisits:0,returnM:0,shadedWalkM:0};let person:Place=home,car:Place=home;
  const [sh,sm]=departure.split(':').map(Number);const startMin=(sh||0)*60+(sm||0);
  const leg=(from:Place,to:Place,mode:Mode,label:string)=>{
@@ -94,7 +98,7 @@ export function simulate(home:Place,stops:Stop[],profile:Profile,active:string[]
   const crossing=nearSchool?(mode==='walk'?(active.includes('crossing')?.25:.75):(active.includes('crossing')?.25:0)):0;
   const conflict=nearSchool&&mode==='walk'&&active.includes('pickup')?.5:0;
   let shadedM=0;
-  if (mode==='walk') for (const e of path.edges) shadedM += e.m * edgeShadedFraction(e, active);
+  if (mode==='walk') for (const e of path.edges) shadedM += e.m * edgeShadedFraction(e, active, seatingZone);
   shadedM = Math.min(shadedM, path.distance);
   const unshadedM = Math.max(0, path.distance - shadedM);
   const barriers=mode==='walk'&&profile.rest>0?Math.max(0,Math.ceil(unshadedM/profile.restEvery)-1):0;
@@ -155,11 +159,11 @@ export type PrecinctImpact = {
  medianAfter: number;
  budget: number;
 };
-export function precinctImpact(stops:Stop[], profile:Profile, active:string[], budget=90, searchMin=4, departure='08:00'):PrecinctImpact {
+export function precinctImpact(stops:Stop[], profile:Profile, active:string[], budget=90, searchMin=4, departure='08:00', seatingZone?:SeatingZone):PrecinctImpact {
  const perHome:PrecinctHome[] = [];
  for (const h of homeCandidates) {
-  const before = simulate(h, stops, profile, [], searchMin, departure);
-  const after = simulate(h, stops, profile, active, searchMin, departure);
+  const before = simulate(h, stops, profile, [], searchMin, departure, seatingZone);
+  const after = simulate(h, stops, profile, active, searchMin, departure, seatingZone);
   perHome.push({
    home: h, before, after,
    withinBefore: !before.error && before.minutes <= budget,
